@@ -36,14 +36,14 @@ class FA3_Interference_JHU_ggHSyst_rw_MengsMuV_HeshyXsec_ggHInt_ggHphase(Physics
             "sigma_BSM_ggH": 15981,
         }
 
-        self.modelBuilder.doVar("CMS_zz4l_fai1[0.0,-1.0,1.0]");
-        self.modelBuilder.doVar("fa3_ggH[0.0,-1.0,1.0]");
-        self.modelBuilder.doVar("muf[1.0,0,10]");
-        self.modelBuilder.doVar("mutau[1.0,0,10]");
-        self.modelBuilder.doVar("muV[1.0,0.0,10.0]");
-        # self.modelBuilder.doSet("POI","CMS_zz4l_fai1,fa3_ggH,muV,muf")
-        self.modelBuilder.doSet("POI","CMS_zz4l_fai1,muV")
-        self.modelBuilder.out.var("muf").setAttribute("flatParam")       # Change to flatParam for VH 
+        self.modelBuilder.doVar("CMS_zz4l_fai1[0.0,-1.0,1.0]")
+        self.modelBuilder.doVar("fa3_ggH[0.0,-1.0,1.0]")
+        self.modelBuilder.doVar("muf[1.0,0,10]")
+        self.modelBuilder.doVar("mutau[1.0,0,10]")
+        self.modelBuilder.doVar("muV[1.0,0.0,10.0]")
+        self.modelBuilder.doSet("POI","CMS_zz4l_fai1,fa3_ggH,muV,muf")
+        # self.modelBuilder.doSet("POI","CMS_zz4l_fai1,muV")
+        # self.modelBuilder.out.var("muf").setAttribute("flatParam")       # Change to flatParam for VH 
         # self.modelBuilder.out.var("fa3_ggH").setAttribute("flatParam")   # Change to flatParam for VH
          
         
@@ -52,7 +52,7 @@ class FA3_Interference_JHU_ggHSyst_rw_MengsMuV_HeshyXsec_ggHInt_ggHphase(Physics
 
         self.modelBuilder.doVar('expr::a1_ggH("sqrt(1-abs(@0))", fa3_ggH)')
         # self.modelBuilder.doVar('expr::a3_ggH("sqrt(abs(@0))", fa3_ggH)'.format(**xsecs)) # no ggH phase!
-	# with ggH phase:
+	    # with ggH phase:
         self.modelBuilder.doVar('expr::a3_ggH("(@0>0 ? -1 : 1) * sqrt(abs(@0))", fa3_ggH)'.format(**xsecs))
 
         self.modelBuilder.factory_('expr::muVc("@1/(1+300.*abs(@0))", CMS_zz4l_fai1,muV)'.format(**xsecs))
@@ -98,9 +98,19 @@ class FA3_Interference_JHU_ggHSyst_rw_MengsMuV_HeshyXsec_ggHInt_ggHphase(Physics
             scale = 'smCoupling_WH'
         if process in ["WPLUSH2HQQ_%s_hgg"%y for y in years]:
             scale = 'smCoupling_WH'
+        if process in ["wh_plus_%s_hgg"%y for y in years]:
+            scale = 'smCoupling_WH'
+        if process in ["wh_minus_%s_hgg"%y for y in years]:
+            scale = 'smCoupling_WH'
         if process in ["WH_lep_%s_hgg"%y for y in years]:
             scale = 'smCoupling_WH'
+        if process in ["wh_ALT_0PM_%s_hgg"%y for y in years]:
+            scale = 'smCoupling_WH'
         if process in ["ZH_lep_%s_hgg"%y for y in years]:
+            scale = 'smCoupling_ZH'
+        if process in ["zh_%s_hgg"%y for y in years]:
+            scale = 'smCoupling_ZH'
+        if process in ["zh_ALT_0PM_%s_hgg"%y for y in years]:
             scale = 'smCoupling_ZH'
         if process in ["qqH_%s_%s_hgg"%(self.altSignal,y) for y in years]:
             scale = 'bsmCoupling_VBF'
@@ -122,28 +132,32 @@ class FA3_Interference_JHU_ggHSyst_rw_MengsMuV_HeshyXsec_ggHInt_ggHphase(Physics
             scale = 'intCoupling_ZH'
         if process in ["wh_%sf05ph0_%s_hgg"%(self.altSignal,y) for y in years]:
             scale = 'intCoupling_WH'
+        if process in ["zh_%sf05_%s_hgg"%(self.altSignal,y) for y in years]:
+            scale = 'intCoupling_ZH'
+        if process in ["wh_%sf05_%s_hgg"%(self.altSignal,y) for y in years]:
+            scale = 'intCoupling_WH'
         if process in ["ggH_%sf05_%s_hgg"%(self.altSignal,y) for y in years]: # not yet considered
             scale = 'intCoupling_ggH'
         ##############################
         # these should be fixed at the tree making level: process names have some different naming convention of procs
-        if 'L1' in self.altSignal:
-            if process in ["ZH_%s_%s_hgg"%(self.altSignal.replace('_','0'),y) for y in years]:
-                scale = 'bsmCoupling_ZH'
-            if process in ["ZH_%sf05ph0_%s_hgg"%(self.altSignal.replace('_','0'),y) for y in years]:
-                scale = 'intCoupling_ZH'
-            if process in ["WH_%s_%s_hgg"%(self.altSignal.replace('_','0'),y) for y in years]:
-                scale = 'bsmCoupling_WH'
-            if process in ["WH_%sf05ph0_%s_hgg"%(self.altSignal.replace('_','0'),y) for y in years]:
-                scale = 'intCoupling_WH'
-        else:
-            if process in ["ZH_%s_%s_hgg"%(self.altSignal.replace('_',''),y) for y in years]:
-                scale = 'bsmCoupling_ZH'
-            if process in ["ZH_%sf05ph0_%s_hgg"%(self.altSignal.replace('_',''),y) for y in years]:
-                scale = 'intCoupling_ZH'
-            if process in ["WH_%s_%s_hgg"%(self.altSignal.replace('_',''),y) for y in years]:
-                scale = 'bsmCoupling_WH'
-            if process in ["WH_%sf05ph0_%s_hgg"%(self.altSignal.replace('_',''),y) for y in years]:
-                scale = 'intCoupling_WH'            
+        # if 'L1' in self.altSignal:
+        #     if process in ["ZH_%s_%s_hgg"%(self.altSignal.replace('_','0'),y) for y in years]:
+        #         scale = 'bsmCoupling_ZH'
+        #     if process in ["ZH_%sf05ph0_%s_hgg"%(self.altSignal.replace('_','0'),y) for y in years]:
+        #         scale = 'intCoupling_ZH'
+        #     if process in ["WH_%s_%s_hgg"%(self.altSignal.replace('_','0'),y) for y in years]:
+        #         scale = 'bsmCoupling_WH'
+        #     if process in ["WH_%sf05ph0_%s_hgg"%(self.altSignal.replace('_','0'),y) for y in years]:
+        #         scale = 'intCoupling_WH'
+        # else:
+        #     if process in ["ZH_%s_%s_hgg"%(self.altSignal.replace('_',''),y) for y in years]:
+        #         scale = 'bsmCoupling_ZH'
+        #     if process in ["ZH_%sf05ph0_%s_hgg"%(self.altSignal.replace('_',''),y) for y in years]:
+        #         scale = 'intCoupling_ZH'
+        #     if process in ["WH_%s_%s_hgg"%(self.altSignal.replace('_',''),y) for y in years]:
+        #         scale = 'bsmCoupling_WH'
+        #     if process in ["WH_%sf05ph0_%s_hgg"%(self.altSignal.replace('_',''),y) for y in years]:
+        #         scale = 'intCoupling_WH'            
         ##############################
         if process in ["ttH_%s_hgg"%y for y in years]:
             scale = 'muf'
